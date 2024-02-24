@@ -16,6 +16,8 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
     private static final Set<Character> caracteresValidos = Set.of('A', 'T', 'C', 'G');
     private static final int MINIMO_SECUENCIA = 4;
 
+    private static final int SECUENCIAS_MINIMAS_REQUERIDAS = 2;
+
     @Autowired
     private ADNHistorioRepository adnHistorioRepository;
 
@@ -34,10 +36,19 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
     public boolean iniciarProceso(String[] dna) {
         TipoResultado resultado = TipoResultado.ADN_INVALIDO;
         if(esADNValido(dna)){
-            if(tieneSecuenciaHorizontal(dna)|| tieneSecuenciaVertical(dna) || tieneSecuenciaDiagonal(dna)){
-                resultado = TipoResultado.MUTANTE;
-            }else{
+            int cantidad = 0;
+            cantidad += tieneSecuenciaHorizontal(dna , cantidad);
+            if(cantidad < SECUENCIAS_MINIMAS_REQUERIDAS) {
+                cantidad += tieneSecuenciaVertical(dna , cantidad);
+            }
+            if(cantidad < SECUENCIAS_MINIMAS_REQUERIDAS) {
+                cantidad += tieneSecuenciaDiagonal(dna , cantidad);
+            }
+
+            if(cantidad < SECUENCIAS_MINIMAS_REQUERIDAS) {
                 resultado = TipoResultado.NO_MUTANTE;
+            }else{
+                resultado = TipoResultado.MUTANTE;
             }
         }
         return resultado.equals(TipoResultado.MUTANTE);
@@ -47,10 +58,18 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
     public TipoResultado iniciarProceso(ADNRequest request, ADNHistorio historio) {
         TipoResultado resultado = TipoResultado.ADN_INVALIDO;
         if(esADNValido(request.getDna())){
-            if(tieneSecuenciaHorizontal(request.getDna()) || tieneSecuenciaVertical(request.getDna()) || tieneSecuenciaDiagonal(request.getDna())){
-                resultado = TipoResultado.MUTANTE;
-            }else{
+            int cantidad = 0;
+            cantidad += tieneSecuenciaHorizontal(request.getDna(), cantidad);
+            if(cantidad < SECUENCIAS_MINIMAS_REQUERIDAS) {
+                cantidad += tieneSecuenciaVertical(request.getDna(), cantidad);
+            }
+            if(cantidad < SECUENCIAS_MINIMAS_REQUERIDAS) {
+                cantidad += tieneSecuenciaDiagonal(request.getDna(), cantidad);
+            }
+            if(cantidad < SECUENCIAS_MINIMAS_REQUERIDAS) {
                 resultado = TipoResultado.NO_MUTANTE;
+            }else{
+                resultado = TipoResultado.MUTANTE;
             }
         }
         historio.setResultado(resultado);
@@ -58,7 +77,7 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
         return resultado;
     }
 
-    private boolean tieneSecuenciaVertical(String[] dna) {
+    private int tieneSecuenciaVertical(String[] dna , int cantidad) {
         int n = dna.length;
         for (int i = 0; i < n; i++) {
             StringBuilder columnBuilder = new StringBuilder();
@@ -66,9 +85,10 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
                 columnBuilder.append(row.charAt(i));
             }
             String columna = columnBuilder.toString();
-            if (tieneSecuenciaRepetida(columna)) return true;
+            if (tieneSecuenciaRepetida(columna)) cantidad++;
+            if(cantidad>1) break;
         }
-        return false;
+        return cantidad;
     }
 
     /**
@@ -76,7 +96,7 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
      * @param dna
      * @return
      */
-    private boolean tieneSecuenciaDiagonal(String[] dna) {
+    private int tieneSecuenciaDiagonal(String[] dna , int cantidad) {
         int n = dna.length;
         for (int i = 0; i <= n - MINIMO_SECUENCIA; i++) {
             StringBuilder diagonalBuilder1 = new StringBuilder();
@@ -85,22 +105,24 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
                 diagonalBuilder1.append(dna[j].charAt(j + i));
                 diagonalBuilder2.append(dna[j + i].charAt(j));
             }
-            if (tieneSecuenciaRepetida(diagonalBuilder1.toString())) return true;
-            if (tieneSecuenciaRepetida(diagonalBuilder2.toString())) return true;
+            if (tieneSecuenciaRepetida(diagonalBuilder1.toString())) cantidad++;
+            if (tieneSecuenciaRepetida(diagonalBuilder2.toString())) cantidad++;
+            if(cantidad>1) break;
         }
-        return false;
+        return  cantidad;
     }
 
     /**
-     * Verificaca si existe una secuencia repetidoa horizontalmente
+     * Verificaca si existen secuencias repetidoa horizontalmente
      * @param dna
      * @return
      */
-    private boolean tieneSecuenciaHorizontal(String[] dna) {
+    private int tieneSecuenciaHorizontal(String[] dna , int cantidad) {
         for (String row : dna) {
-            if (tieneSecuenciaRepetida(row)) return true;
+            if (tieneSecuenciaRepetida(row)) cantidad++;
+            if(cantidad>1) break;
         }
-        return false;
+        return  cantidad;
     }
 
     /**

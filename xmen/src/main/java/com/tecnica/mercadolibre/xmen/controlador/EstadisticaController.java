@@ -2,7 +2,7 @@ package com.tecnica.mercadolibre.xmen.controlador;
 
 import com.tecnica.mercadolibre.xmen.DTO.EstadisticaDTO;
 import com.tecnica.mercadolibre.xmen.enumable.TipoResultado;
-import com.tecnica.mercadolibre.xmen.respositorio.ADNHistorioRepository;
+import com.tecnica.mercadolibre.xmen.servicio.ADNHistoricoServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/stats")
 public class EstadisticaController {
     @Autowired
-    private ADNHistorioRepository adnHistoricoRepository;
+    private ADNHistoricoServicio adnHistoricoServicio;
 
     @GetMapping
     public ResponseEntity<EstadisticaDTO> obtenerEstadisticas() {
-        long countMutantes = adnHistoricoRepository.countByResultado(TipoResultado.MUTANTE.name());
-        long countHumanos = adnHistoricoRepository.countByResultado(TipoResultado.NO_MUTANTE.name());
+        long countMutantes = adnHistoricoServicio.countByResultado(TipoResultado.MUTANTE.name());
+        long countHumanos = adnHistoricoServicio.countByResultado(TipoResultado.NO_MUTANTE.name());
 
         double ratio = countMutantes / (double)(countMutantes + countHumanos);
 

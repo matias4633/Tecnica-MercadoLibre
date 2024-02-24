@@ -1,6 +1,5 @@
 package com.tecnica.mercadolibre.xmen.DTO;
 
-import com.tecnica.mercadolibre.xmen.enumable.TipoResultado;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
