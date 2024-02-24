@@ -1,0 +1,9 @@
+server:
+  port: ${SERVER_PORT}
+spring:
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
+      database: ${DATABASE_NAME}
+  config:
+    import: classpath:application-dev.properties
