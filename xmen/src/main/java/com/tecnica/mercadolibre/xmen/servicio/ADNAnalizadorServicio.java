@@ -21,11 +21,21 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
     @Autowired
     private ADNHistoricoServicio adnHistoricoServicio;
 
+    /**
+     * Retorna true si el ADN es MUTANTE.
+     * @param dna
+     * @return
+     */
     public boolean isMutant(String[] dna){
         TipoResultado resultado = iniciarProceso(dna , null);
         return resultado.equals(TipoResultado.MUTANTE);
     }
 
+    /**
+     * Inicia el proceso del ADN y guarda el historico consultado.
+     * @param dna
+     * @return
+     */
     @Override
     public TipoResultado procesarADN(@NotNull @NotEmpty String[] dna){
         ADNHistorio historio = new ADNHistorio();
@@ -33,6 +43,18 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
         adnHistoricoServicio.save(historio);
         return resultado;
     }
+
+    /**
+     * El método de procesamiento para buscar secuencias mutantes se enfoca en evitar el procesamiento innecesario de datos.
+     * Tan pronto como se dispone de la información suficiente para tomar una decisión, el proceso termina.
+     * Este enfoque optimiza el rendimiento al evitar operaciones redundantes.
+     * Este método está diseñado para no procesar secuencias de ADN cuya longitud no alcance el umbral mínimo necesario para el éxito de la búsqueda.
+     * Del mismo modo, los ciclos de procesamiento solo se activan cuando existe la posibilidad real de encontrar secuencias mutantes.
+     * Esto asegura una ejecución eficiente del algoritmo al evitar la manipulación de datos que no contribuirán al resultado final.
+     * @param dna
+     * @param historio
+     * @return
+     */
     public TipoResultado iniciarProceso(String[] dna, ADNHistorio historio) {
         TipoResultado resultado = TipoResultado.ADN_INVALIDO;
         if(esADNValido(dna)){
@@ -56,6 +78,13 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
         }
         return resultado;
     }
+
+    /**
+     * Buscar las secuencias verticales.
+     * @param dna
+     * @param cantidad
+     * @return
+     */
 
     private int tieneSecuenciaVertical(String[] dna , int cantidad) {
         int n = dna.length;
