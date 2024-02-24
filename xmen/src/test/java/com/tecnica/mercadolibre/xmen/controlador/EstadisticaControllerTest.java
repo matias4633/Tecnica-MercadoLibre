@@ -34,4 +34,14 @@ class EstadisticaControllerTest {
                 .andExpect(jsonPath("$.count_human_dna").value(100))
                 .andExpect(jsonPath("$.ratio").value(0.4));
     }
+    @Test
+    public void NoDeberiaRompersePorDivisionPorCero() throws Exception {
+        when(adnHistoricoServicioMock.countByResultado(TipoResultado.MUTANTE.name())).thenReturn(40L);
+        when(adnHistoricoServicioMock.countByResultado(TipoResultado.NO_MUTANTE.name())).thenReturn(0L);
+        mockMvc.perform(get("/stats"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.count_mutant_dna").value(40))
+                .andExpect(jsonPath("$.count_human_dna").value(0))
+                .andExpect(jsonPath("$.ratio").value(1));
+    }
 }

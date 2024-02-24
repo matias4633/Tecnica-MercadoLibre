@@ -1,10 +1,10 @@
 package com.tecnica.mercadolibre.xmen.servicio;
 
-import com.tecnica.mercadolibre.xmen.DTO.ADNRequest;
 import com.tecnica.mercadolibre.xmen.enumable.TipoResultado;
 import com.tecnica.mercadolibre.xmen.interfaces.ADNAnalizadorInterface;
 import com.tecnica.mercadolibre.xmen.modelo.ADNHistorio;
-import com.tecnica.mercadolibre.xmen.respositorio.ADNHistorioRepository;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,52 +19,30 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
     private static final int SECUENCIAS_MINIMAS_REQUERIDAS = 2;
 
     @Autowired
-    private ADNHistorioRepository adnHistorioRepository;
+    private ADNHistoricoServicio adnHistoricoServicio;
 
     public boolean isMutant(String[] dna){
-        return iniciarProceso(dna);
-    }
-
-    @Override
-    public TipoResultado procesarADN(ADNRequest request){
-        ADNHistorio historio = new ADNHistorio();
-        TipoResultado resultado = iniciarProceso(request , historio);
-        adnHistorioRepository.save(historio);
-        return resultado;
-    }
-
-    public boolean iniciarProceso(String[] dna) {
-        TipoResultado resultado = TipoResultado.ADN_INVALIDO;
-        if(esADNValido(dna)){
-            int cantidad = 0;
-            cantidad += tieneSecuenciaHorizontal(dna , cantidad);
-            if(cantidad < SECUENCIAS_MINIMAS_REQUERIDAS) {
-                cantidad += tieneSecuenciaVertical(dna , cantidad);
-            }
-            if(cantidad < SECUENCIAS_MINIMAS_REQUERIDAS) {
-                cantidad += tieneSecuenciaDiagonal(dna , cantidad);
-            }
-
-            if(cantidad < SECUENCIAS_MINIMAS_REQUERIDAS) {
-                resultado = TipoResultado.NO_MUTANTE;
-            }else{
-                resultado = TipoResultado.MUTANTE;
-            }
-        }
+        TipoResultado resultado = iniciarProceso(dna , null);
         return resultado.equals(TipoResultado.MUTANTE);
     }
 
-
-    public TipoResultado iniciarProceso(ADNRequest request, ADNHistorio historio) {
+    @Override
+    public TipoResultado procesarADN(@NotNull @NotEmpty String[] dna){
+        ADNHistorio historio = new ADNHistorio();
+        TipoResultado resultado = iniciarProceso(dna , historio);
+        adnHistoricoServicio.save(historio);
+        return resultado;
+    }
+    public TipoResultado iniciarProceso(String[] dna, ADNHistorio historio) {
         TipoResultado resultado = TipoResultado.ADN_INVALIDO;
-        if(esADNValido(request.getDna())){
+        if(esADNValido(dna)){
             int cantidad = 0;
-            cantidad += tieneSecuenciaHorizontal(request.getDna(), cantidad);
+            cantidad += tieneSecuenciaHorizontal(dna, cantidad);
             if(cantidad < SECUENCIAS_MINIMAS_REQUERIDAS) {
-                cantidad += tieneSecuenciaVertical(request.getDna(), cantidad);
+                cantidad += tieneSecuenciaVertical(dna, cantidad);
             }
             if(cantidad < SECUENCIAS_MINIMAS_REQUERIDAS) {
-                cantidad += tieneSecuenciaDiagonal(request.getDna(), cantidad);
+                cantidad += tieneSecuenciaDiagonal(dna, cantidad);
             }
             if(cantidad < SECUENCIAS_MINIMAS_REQUERIDAS) {
                 resultado = TipoResultado.NO_MUTANTE;
@@ -72,8 +50,10 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
                 resultado = TipoResultado.MUTANTE;
             }
         }
-        historio.setResultado(resultado);
-        historio.setDna(request.getDna());
+        if(historio != null){
+            historio.setResultado(resultado);
+            historio.setDna(dna);
+        }
         return resultado;
     }
 
@@ -92,7 +72,7 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
     }
 
     /**
-     * Varifica si tiene una secuncia diagonalmente tomando primero la diagonal principal y luego las diagonales superoires e inferiores.
+     * Varifica si tiene secuncias diagonalmente tomando primero la diagonal principal y luego las diagonales superoires e inferiores.
      * @param dna
      * @return
      */

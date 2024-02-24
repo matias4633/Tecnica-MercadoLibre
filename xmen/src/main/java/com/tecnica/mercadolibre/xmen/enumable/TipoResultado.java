@@ -1,6 +1,8 @@
 package com.tecnica.mercadolibre.xmen.enumable;
 
+import lombok.Getter;
 
+@Getter
 public enum TipoResultado {
     MUTANTE("Mutante", "Es un mutante."),
     NO_MUTANTE("No Mutante" , "No es un mutante."),
@@ -13,13 +15,5 @@ public enum TipoResultado {
     TipoResultado ( String resultado , String mensaje){
         this.resultado = resultado;
         this.mensaje = mensaje;
-    }
-
-    public String getResultado() {
-        return resultado;
-    }
-
-    public String getMensaje() {
-        return mensaje;
     }
 }

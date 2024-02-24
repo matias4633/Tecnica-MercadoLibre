@@ -22,7 +22,7 @@ public class ADNController {
 
     @PostMapping()
     public ResponseEntity<ApiResponse> procesarADN(@RequestBody @Valid ADNRequest request){
-        TipoResultado tipoResultado = ADNServicio.procesarADN(request);
+        TipoResultado tipoResultado = ADNServicio.procesarADN(request.getDna());
         if(tipoResultado.equals(TipoResultado.ADN_INVALIDO)){
             throw new ADNNoValidoException();
         }

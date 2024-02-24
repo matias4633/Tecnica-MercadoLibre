@@ -19,9 +19,10 @@ public class EstadisticaController {
     public ResponseEntity<EstadisticaDTO> obtenerEstadisticas() {
         long countMutantes = adnHistoricoServicio.countByResultado(TipoResultado.MUTANTE.name());
         long countHumanos = adnHistoricoServicio.countByResultado(TipoResultado.NO_MUTANTE.name());
-
-        double ratio = countMutantes / (double)(countMutantes + countHumanos);
-
+        double ratio = 1;
+        if(countHumanos != 0L){
+            ratio = countMutantes / (double)countHumanos;
+        }
         EstadisticaDTO estadistica = new EstadisticaDTO();
         estadistica.setCount_mutant_dna(countMutantes);
         estadistica.setCount_human_dna(countHumanos);
