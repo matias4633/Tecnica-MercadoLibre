@@ -13,7 +13,7 @@ import java.util.Set;
 @Service
 public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
 
-    private static final Set<Character> caracteresValidos = Set.of('A', 'T', 'C', 'G');
+    private static final Set<Character> CARACTERES_VALIDOS = Set.of('A', 'T', 'C', 'G');
     private static final int MINIMO_SECUENCIA = 4;
 
     private static final int SECUENCIAS_MINIMAS_REQUERIDAS = 2;
@@ -144,7 +144,7 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
      */
     private boolean esFilaValida(String row) {
         for (char c : row.toCharArray()) {
-            if (!caracteresValidos.contains(c)) {
+            if (!CARACTERES_VALIDOS.contains(c)) {
                 return false;
             }
         }

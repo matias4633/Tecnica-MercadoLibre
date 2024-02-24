@@ -3,6 +3,8 @@ package com.tecnica.mercadolibre.xmen.controlador;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tecnica.mercadolibre.xmen.DTO.ADNRequest;
+import com.tecnica.mercadolibre.xmen.diccionario.Texto_;
+import com.tecnica.mercadolibre.xmen.enumable.TipoResultado;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -30,8 +32,8 @@ class ADNControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.mensaje").value("No puede enviar el ADN vacio."))
-                .andExpect(jsonPath("$.resultado").value("ADN_INVALIDO"));
+                .andExpect(jsonPath("$.mensaje").value(Texto_.ADN_VACIO))
+                .andExpect(jsonPath("$.resultado").value(TipoResultado.ADN_INVALIDO.name()));
     }
 
 
@@ -52,8 +54,8 @@ class ADNControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.mensaje").value("El ADN recibido es invalido."))
-                .andExpect(jsonPath("$.resultado").value("ADN_INVALIDO"));
+                .andExpect(jsonPath("$.mensaje").value(Texto_.ADN_INVALIDO))
+                .andExpect(jsonPath("$.resultado").value(TipoResultado.ADN_INVALIDO.name()));
     }
 
     @Test
@@ -74,8 +76,8 @@ class ADNControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.mensaje").value("El ADN recibido es invalido."))
-                .andExpect(jsonPath("$.resultado").value("ADN_INVALIDO"));
+                .andExpect(jsonPath("$.mensaje").value(Texto_.ADN_INVALIDO))
+                .andExpect(jsonPath("$.resultado").value(TipoResultado.ADN_INVALIDO.name()));
     }
 
     @Test
@@ -91,20 +93,20 @@ class ADNControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.mensaje").value("El ADN recibido es invalido."))
-                .andExpect(jsonPath("$.resultado").value("ADN_INVALIDO"));
+                .andExpect(jsonPath("$.mensaje").value(Texto_.ADN_INVALIDO))
+                .andExpect(jsonPath("$.resultado").value(TipoResultado.ADN_INVALIDO.name()));
     }
 
     @Test
-    public void deberiaResponderMUTANTE() throws Exception {
+    public void deberiaResponder_MUTANTE() throws Exception {
         ADNRequest request = new ADNRequest(new String[]{"ATGCGA","CAGTGC","TTATGT","AGAAGG","CCCCTA","TCACTG"});
         String jsonRequest = getJsonRequest(request);
         mockMvc.perform(post("/mutant")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.mensaje").value("Es un mutante."))
-                .andExpect(jsonPath("$.resultado").value("MUTANTE"));
+                .andExpect(jsonPath("$.mensaje").value(Texto_.ES_MUTANTE))
+                .andExpect(jsonPath("$.resultado").value(TipoResultado.MUTANTE.name()));
     }
 
     @Test
@@ -120,8 +122,8 @@ class ADNControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.mensaje").value("Es un mutante."))
-                .andExpect(jsonPath("$.resultado").value("MUTANTE"));
+                .andExpect(jsonPath("$.mensaje").value(Texto_.ES_MUTANTE))
+                .andExpect(jsonPath("$.resultado").value(TipoResultado.MUTANTE.name()));
     }
 
     @Test
@@ -137,8 +139,8 @@ class ADNControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.mensaje").value("Es un mutante."))
-                .andExpect(jsonPath("$.resultado").value("MUTANTE"));
+                .andExpect(jsonPath("$.mensaje").value(Texto_.ES_MUTANTE))
+                .andExpect(jsonPath("$.resultado").value(TipoResultado.MUTANTE.name()));
     }
 
     @Test
@@ -154,8 +156,8 @@ class ADNControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.mensaje").value("No es un mutante."))
-                .andExpect(jsonPath("$.resultado").value("NO_MUTANTE"));
+                .andExpect(jsonPath("$.mensaje").value(Texto_.NO_MUTANTE))
+                .andExpect(jsonPath("$.resultado").value(TipoResultado.NO_MUTANTE.name()));
     }
 
     public String getJsonRequest(ADNRequest request) throws JsonProcessingException {

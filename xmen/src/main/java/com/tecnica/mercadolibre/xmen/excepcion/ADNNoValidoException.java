@@ -1,5 +1,6 @@
 package com.tecnica.mercadolibre.xmen.excepcion;
 
+import com.tecnica.mercadolibre.xmen.diccionario.Texto_;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,6 +13,6 @@ public class ADNNoValidoException extends  RuntimeException{
 
     public ADNNoValidoException(){
         super();
-        this.mensaje = "El ADN recibido es invalido.";
+        this.mensaje = Texto_.ADN_INVALIDO;
     }
 }

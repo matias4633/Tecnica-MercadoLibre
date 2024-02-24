@@ -1,19 +1,17 @@
 package com.tecnica.mercadolibre.xmen.enumable;
 
+import com.tecnica.mercadolibre.xmen.diccionario.Texto_;
 import lombok.Getter;
 
 @Getter
 public enum TipoResultado {
-    MUTANTE("Mutante", "Es un mutante."),
-    NO_MUTANTE("No Mutante" , "No es un mutante."),
+    MUTANTE(Texto_.ES_MUTANTE),
+    NO_MUTANTE(Texto_.NO_MUTANTE),
+    ADN_INVALIDO(Texto_.ADN_INVALIDO);
 
-    ADN_INVALIDO("ADN INVALIDO", "El ADN enviado es invalido.");
-
-    private String resultado;
     private String mensaje;
 
-    TipoResultado ( String resultado , String mensaje){
-        this.resultado = resultado;
+    TipoResultado ( String mensaje){
         this.mensaje = mensaje;
     }
 }
