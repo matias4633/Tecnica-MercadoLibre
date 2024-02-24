@@ -99,8 +99,7 @@ POST https://magnetoapp.fly.dev/mutant
 ```
 
 **La primera consulta puede tardar por ser un servicio de deploy gratuito la aplicacion entra en suspención cuando esta fuera de uso.**
--
--
-**En la ruta xmen/htmlReport/index.html puede visualizar el reporte de Cobertura de codigo generado.**
+
+**Code Coverage alcanzado : 88% .**
 
 
