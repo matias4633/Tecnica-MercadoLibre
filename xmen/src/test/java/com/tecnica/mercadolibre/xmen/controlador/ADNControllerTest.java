@@ -144,6 +144,24 @@ class ADNControllerTest {
     }
 
     @Test
+    public void deberiaResponder_MUTANTE_PorDobleSecuencia() throws Exception {
+        ADNRequest request = new ADNRequest(new String[]{
+                "ACAAC",
+                "CACCA",
+                "ACAGG",
+                "ACAAA",
+                "ACAAA"}
+        );
+        String jsonRequest = getJsonRequest(request);
+        mockMvc.perform(post("/mutant")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.mensaje").value(Texto_.ES_MUTANTE))
+                .andExpect(jsonPath("$.resultado").value(TipoResultado.MUTANTE.name()));
+    }
+
+    @Test
     public void deberiaResponder_NO_MUTANTE() throws Exception {
         ADNRequest request = new ADNRequest(new String[]{
                 "ATAA",

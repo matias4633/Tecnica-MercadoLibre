@@ -94,7 +94,7 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
                 columnBuilder.append(row.charAt(i));
             }
             String columna = columnBuilder.toString();
-            if (tieneSecuenciaRepetida(columna)) cantidad++;
+            cantidad = tieneSecuenciaRepetida(columna , cantidad);
             if(cantidad>1) break;
         }
         return cantidad;
@@ -114,8 +114,8 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
                 diagonalBuilder1.append(dna[j].charAt(j + i));
                 diagonalBuilder2.append(dna[j + i].charAt(j));
             }
-            if (tieneSecuenciaRepetida(diagonalBuilder1.toString())) cantidad++;
-            if (tieneSecuenciaRepetida(diagonalBuilder2.toString())) cantidad++;
+            cantidad = tieneSecuenciaRepetida(diagonalBuilder1.toString() , cantidad);
+            cantidad = tieneSecuenciaRepetida(diagonalBuilder2.toString() , cantidad);
             if(cantidad>1) break;
         }
         return  cantidad;
@@ -128,7 +128,7 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
      */
     private int tieneSecuenciaHorizontal(String[] dna , int cantidad) {
         for (String row : dna) {
-            if (tieneSecuenciaRepetida(row)) cantidad++;
+            cantidad = tieneSecuenciaRepetida(row , cantidad);
             if(cantidad>1) break;
         }
         return  cantidad;
@@ -136,18 +136,20 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
 
     /**
      * Verifica si la secuencia tiene repetidos tiene N caractener repetidos.
+     * Retprma ña camtodad actual encontrada.
      * @param secuencia
      * @return
      */
-    private boolean tieneSecuenciaRepetida(String secuencia) {
+    private int tieneSecuenciaRepetida(String secuencia , int cantidad) {
         for (int i = 0; i <= secuencia.length() - MINIMO_SECUENCIA; i++) {
             if (secuencia.charAt(i) == secuencia.charAt(i + 1) &&
                     secuencia.charAt(i) == secuencia.charAt(i + 2) &&
                     secuencia.charAt(i) == secuencia.charAt(i + 3)) {
-                return true;
+                 cantidad++;
             }
+            if(cantidad>1) break;
         }
-        return false;
+        return cantidad;
     }
 
     /**
