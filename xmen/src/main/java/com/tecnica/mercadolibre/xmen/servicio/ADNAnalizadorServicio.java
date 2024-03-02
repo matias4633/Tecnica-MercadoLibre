@@ -3,6 +3,7 @@ package com.tecnica.mercadolibre.xmen.servicio;
 import com.tecnica.mercadolibre.xmen.enumable.TipoResultado;
 import com.tecnica.mercadolibre.xmen.interfaces.ADNAnalizadorInterface;
 import com.tecnica.mercadolibre.xmen.modelo.ADNHistorio;
+import com.tecnica.mercadolibre.xmen.utils.Secuenciero;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,18 +59,18 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
     public TipoResultado iniciarProceso(String[] dna, ADNHistorio historio) {
         TipoResultado resultado = TipoResultado.ADN_INVALIDO;
         if(esADNValido(dna)){
-            int cantidad = 0;
-            cantidad += tieneSecuenciaHorizontal(dna, cantidad);
-            if(cantidad < SECUENCIAS_MINIMAS_REQUERIDAS) {
-                cantidad += tieneSecuenciaVertical(dna, cantidad);
+            Secuenciero secuenciero = new Secuenciero(SECUENCIAS_MINIMAS_REQUERIDAS);
+            tieneSecuenciaHorizontal(dna, secuenciero);
+            if(!secuenciero.superaCantidadRequerida()) {
+               tieneSecuenciaVertical(dna, secuenciero);
             }
-            if(cantidad < SECUENCIAS_MINIMAS_REQUERIDAS) {
-                cantidad += tieneSecuenciaDiagonal(dna, cantidad);
+            if(!secuenciero.superaCantidadRequerida()) {
+               tieneSecuenciaDiagonal(dna, secuenciero);
             }
-            if(cantidad < SECUENCIAS_MINIMAS_REQUERIDAS) {
-                resultado = TipoResultado.NO_MUTANTE;
+            if(!secuenciero.superaCantidadRequerida()) {
+               resultado = TipoResultado.NO_MUTANTE;
             }else{
-                resultado = TipoResultado.MUTANTE;
+               resultado = TipoResultado.MUTANTE;
             }
         }
         if(historio != null){
@@ -82,11 +83,11 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
     /**
      * Buscar las secuencias verticales.
      * @param dna
-     * @param cantidad
+     * @param secuenciero
      * @return
      */
 
-    private int tieneSecuenciaVertical(String[] dna , int cantidad) {
+    private void tieneSecuenciaVertical(String[] dna , Secuenciero secuenciero) {
         int n = dna.length;
         for (int i = 0; i < n; i++) {
             StringBuilder columnBuilder = new StringBuilder();
@@ -94,10 +95,9 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
                 columnBuilder.append(row.charAt(i));
             }
             String columna = columnBuilder.toString();
-            cantidad = tieneSecuenciaRepetida(columna , cantidad);
-            if(cantidad>1) break;
+            tieneSecuenciaRepetida(columna , secuenciero);
+            if(secuenciero.superaCantidadRequerida()) break;
         }
-        return cantidad;
     }
 
     /**
@@ -105,7 +105,7 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
      * @param dna
      * @return
      */
-    private int tieneSecuenciaDiagonal(String[] dna , int cantidad) {
+    private void tieneSecuenciaDiagonal(String[] dna , Secuenciero secuenciero) {
         int n = dna.length;
         for (int i = 0; i <= n - MINIMO_SECUENCIA; i++) {
             StringBuilder diagonalBuilder1 = new StringBuilder();
@@ -114,11 +114,10 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
                 diagonalBuilder1.append(dna[j].charAt(j + i));
                 diagonalBuilder2.append(dna[j + i].charAt(j));
             }
-            cantidad = tieneSecuenciaRepetida(diagonalBuilder1.toString() , cantidad);
-            cantidad = tieneSecuenciaRepetida(diagonalBuilder2.toString() , cantidad);
-            if(cantidad>1) break;
+            tieneSecuenciaRepetida(diagonalBuilder1.toString(), secuenciero);
+            tieneSecuenciaRepetida(diagonalBuilder2.toString(), secuenciero);
+            if (secuenciero.superaCantidadRequerida()) break;
         }
-        return  cantidad;
     }
 
     /**
@@ -126,12 +125,11 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
      * @param dna
      * @return
      */
-    private int tieneSecuenciaHorizontal(String[] dna , int cantidad) {
+    private void tieneSecuenciaHorizontal(String[] dna , Secuenciero secuenciero) {
         for (String row : dna) {
-            cantidad = tieneSecuenciaRepetida(row , cantidad);
-            if(cantidad>1) break;
+            tieneSecuenciaRepetida(row , secuenciero);
+            if(secuenciero.superaCantidadRequerida()) break;
         }
-        return  cantidad;
     }
 
     /**
@@ -140,16 +138,15 @@ public class ADNAnalizadorServicio implements ADNAnalizadorInterface {
      * @param secuencia
      * @return
      */
-    private int tieneSecuenciaRepetida(String secuencia , int cantidad) {
+    private void tieneSecuenciaRepetida(String secuencia , Secuenciero secuenciero) {
         for (int i = 0; i <= secuencia.length() - MINIMO_SECUENCIA; i++) {
             if (secuencia.charAt(i) == secuencia.charAt(i + 1) &&
                     secuencia.charAt(i) == secuencia.charAt(i + 2) &&
                     secuencia.charAt(i) == secuencia.charAt(i + 3)) {
-                 cantidad++;
+                secuenciero.sumar();
             }
-            if(cantidad>1) break;
+            if(secuenciero.superaCantidadRequerida()) break;
         }
-        return cantidad;
     }
 
     /**
